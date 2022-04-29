@@ -406,7 +406,7 @@ aggregate_and_filter <- function(dt_list,
             rownames(pData(AMR_analytic_data[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
             fData(AMR_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(AMR_analytic_data[[l]])))
             rownames(fData(AMR_analytic_data[[l]])) <- rownames(MRcounts(AMR_analytic_data[[l]]))
-            pData(AMR_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(kraken, p=0.5)
+            pData(AMR_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(amr, p=0.5)
         }
         
         for( l in 1:length(AMR_raw_analytic_data) ) {
@@ -420,28 +420,6 @@ aggregate_and_filter <- function(dt_list,
         
         metadata <- data.table(metadata[match(colnames(MRcounts(amr_class_analytic)), metadata[[sample_column_id]])])
         setkeyv(metadata, sample_column_id)
-        
-        # write.csv(make_sparse(amr_class, 'class', c('class')), 'amr_matrices/sparse_normalized/AMR_Class_Sparse_Normalized.csv',
-        #           row.names=T)
-        # write.table(amr_class, 'amr_matrices/normalized/AMR_Class_Normalized.csv', sep=',', row.names = F, col.names = T)
-        # write.table(amr_class_raw, 'amr_matrices/raw/AMR_Class_Raw.csv', sep=',', row.names = F, col.names = T)
-        # 
-        # 
-        # write.csv(make_sparse(amr_mech, 'mechanism', c('mechanism')), 'amr_matrices/sparse_normalized/AMR_Mechanism_Sparse_Normalized.csv',
-        #           row.names=T)
-        # write.table(amr_mech, 'amr_matrices/normalized/AMR_Mechanism_Normalized.csv', sep=',', row.names = F, col.names = T)
-        # write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Mechanism_Raw.csv', sep=',', row.names = F, col.names = T)
-        # 
-        # write.csv(make_sparse(amr_group, 'group', c('group')), 'amr_matrices/sparse_normalized/AMR_Group_Sparse_Normalized.csv',
-        #           row.names=T)
-        # write.table(amr_group, 'amr_matrices/normalized/AMR_Group_Normalized.csv', sep=',', row.names = F, col.names = T)
-        # write.table(amr_mech_raw, 'amr_matrices/raw/AMR_Group_Raw.csv', sep=',', row.names = F, col.names = T)
-        # 
-        # write.csv(make_sparse(amr_norm, 'header', c('header', 'class', 'mechanism', 'group')),
-        #           'amr_matrices/sparse_normalized/AMR_Gene_Sparse_Normalized.csv',
-        #           row.names=T)
-        # write.table(amr_norm, 'amr_matrices/normalized/AMR_Gene_Normalized.csv', sep=',', row.names = F, col.names = T)
-        # write.table(amr_raw, 'amr_matrices/raw/AMR_Gene_Raw.csv', sep=',', row.names = F, col.names = T)
     }
     
     if(!is.na(kraken_norm)) {
@@ -575,7 +553,7 @@ aggregate_and_filter <- function(dt_list,
             rownames(pData(kraken_analytic_data[[l]])) <- metadata[[sample_column_id]][sample_idx]
             fData(kraken_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_analytic_data[[l]])))
             rownames(fData(kraken_analytic_data[[l]])) <- rownames(MRcounts(kraken_analytic_data[[l]]))
-            pData(kraken_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(amr, p=0.5)
+            pData(kraken_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(kraken, p=0.5)
         }
         
         for( l in 1:length(kraken_raw_analytic_data) ) {
