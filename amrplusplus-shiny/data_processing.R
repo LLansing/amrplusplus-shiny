@@ -78,7 +78,7 @@ validate_data_inputs <- function(amr_counts,
                 sep='')
         }
         
-        if(length(colnames(amr_annotations)) != 4) {
+        if(length(colnames(amr_annotations)) != 5) {
             cat('Error: AMR annotation file has an improper number of columns\n',
                 'Check file integrity and proper CSV format.\n',
                 sep='')
@@ -332,62 +332,73 @@ aggregate_and_filter <- function(dt_list,
         }
         
         # Group the AMR data by level for analysis
-        amr_class <- amr_norm[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
+        amr_type <- amr_norm[, lapply(.SD, sum), by='type', .SDcols=!c('header', 'mechanism', 'group', 'class')]
+        amr_type_analytic <- newMRexperiment(counts=amr_type[, .SD, .SDcols=!'type'])
+        rownames(amr_type_analytic) <- amr_type$type
+        
+        amr_type_raw <- amr_raw[, lapply(.SD, sum), by='type', .SDcols=!c('header', 'mechanism', 'group', 'class')]
+        amr_type_raw_analytic <- newMRexperiment(counts=amr_type_raw[, .SD, .SDcols=!'type'])
+        rownames(amr_type_raw_analytic) <- amr_type_raw$type
+        
+        amr_class <- amr_norm[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group', 'type')]
         amr_class_analytic <- newMRexperiment(counts=amr_class[, .SD, .SDcols=!'class'])
         rownames(amr_class_analytic) <- amr_class$class
         
-        amr_class_raw <- amr_raw[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group')]
+        amr_class_raw <- amr_raw[, lapply(.SD, sum), by='class', .SDcols=!c('header', 'mechanism', 'group', 'type')]
         amr_class_raw_analytic <- newMRexperiment(counts=amr_class_raw[, .SD, .SDcols=!'class'])
         rownames(amr_class_raw_analytic) <- amr_class_raw$class
         
-        amr_mech <- amr_norm[, lapply(.SD, sum), by='mechanism', .SDcols=!c('header', 'class', 'group')]
+        amr_mech <- amr_norm[, lapply(.SD, sum), by='mechanism', .SDcols=!c('header', 'class', 'group', 'type')]
         amr_mech_analytic <- newMRexperiment(counts=amr_mech[, .SD, .SDcols=!'mechanism'])
         rownames(amr_mech_analytic) <- amr_mech$mechanism
         
-        amr_mech_raw <- amr_raw[, lapply(.SD, sum), by='mechanism', .SDcols=!c('header', 'class', 'group')]
+        amr_mech_raw <- amr_raw[, lapply(.SD, sum), by='mechanism', .SDcols=!c('header', 'class', 'group', 'type')]
         amr_mech_raw_analytic <- newMRexperiment(counts=amr_mech_raw[, .SD, .SDcols=!'mechanism'])
         rownames(amr_mech_raw_analytic) <- amr_mech_raw$mechanism
         
-        amr_group <- amr_norm[, lapply(.SD, sum), by='group', .SDcols=!c('header', 'mechanism', 'class')]
+        amr_group <- amr_norm[, lapply(.SD, sum), by='group', .SDcols=!c('header', 'mechanism', 'class', 'type')]
         amr_group_analytic <- newMRexperiment(counts=amr_group[, .SD, .SDcols=!'group'])
         rownames(amr_group_analytic) <- amr_group$group
         
-        amr_group_raw <- amr_raw[, lapply(.SD, sum), by='group', .SDcols=!c('header', 'mechanism', 'class')]
+        amr_group_raw <- amr_raw[, lapply(.SD, sum), by='group', .SDcols=!c('header', 'mechanism', 'class', 'type')]
         amr_group_raw_analytic <- newMRexperiment(counts=amr_group_raw[, .SD, .SDcols=!'group'])
         rownames(amr_group_raw_analytic) <- amr_group_raw$group
         
         amr_gene_analytic <- newMRexperiment(
             counts=amr_norm[!(group %in% snp_regex),
-                            .SD, .SDcols=!c('header', 'class', 'mechanism', 'group')])
+                            .SD, .SDcols=!c('header', 'class', 'mechanism', 'group', 'type')])
         amr_gene_raw_analytic <- newMRexperiment(
             counts=amr_raw[!(group %in% snp_regex),
-                           .SD, .SDcols=!c('header', 'class', 'mechanism', 'group')])
+                           .SD, .SDcols=!c('header', 'class', 'mechanism', 'group', 'type')])
         
         rownames(amr_gene_analytic) <- amr_norm$header
         rownames(amr_gene_raw_analytic) <- amr_raw$header
         
         
         # Make long data frame for plotting with ggplot2
-        amr_melted_analytic <- rbind(melt_dt(MRcounts(amr_class_analytic), 'Class'),
+        amr_melted_analytic <- rbind(melt_dt(MRcounts(amr_type_analytic), 'Type'),
+                                     melt_dt(MRcounts(amr_class_analytic), 'Class'),
                                      melt_dt(MRcounts(amr_mech_analytic), 'Mechanism'),
                                      melt_dt(MRcounts(amr_group_analytic), 'Group'),
                                      melt_dt(MRcounts(amr_gene_analytic), 'Gene'))
-        amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_class_raw_analytic), 'Class'),
+        amr_melted_raw_analytic <- rbind(melt_dt(MRcounts(amr_type_raw_analytic), 'Type'),
+                                         melt_dt(MRcounts(amr_class_raw_analytic), 'Class'),
                                          melt_dt(MRcounts(amr_mech_raw_analytic), 'Mechanism'),
                                          melt_dt(MRcounts(amr_group_raw_analytic), 'Group'),
                                          melt_dt(MRcounts(amr_gene_raw_analytic), 'Gene'))
         
         # Vector of objects for iteration and their names
-        AMR_analytic_data <- c(amr_class_analytic,
+        AMR_analytic_data <- c(amr_type_analytic,
+                               amr_class_analytic,
                                amr_mech_analytic,
                                amr_group_analytic,
                                amr_gene_analytic)
-        AMR_analytic_names <- c('Class', 'Mechanism', 'Group', 'Gene')
-        AMR_raw_analytic_data <- c(amr_class_raw_analytic,
+        AMR_analytic_names <- c('Type', 'Class', 'Mechanism', 'Group', 'Gene')
+        AMR_raw_analytic_data <- c(amr_type_raw_analytic,
+                                   amr_class_raw_analytic,
                                    amr_mech_raw_analytic,
                                    amr_group_raw_analytic,
                                    amr_gene_raw_analytic)
-        
         for( l in 1:length(AMR_analytic_data) ) {
             sample_idx <- match(colnames(MRcounts(AMR_analytic_data[[l]])), metadata[[sample_column_id]])
             pData(AMR_analytic_data[[l]]) <- data.frame(

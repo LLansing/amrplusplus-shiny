@@ -12,10 +12,11 @@ microbiome_lookup <- c(
 )
 
 amr_lookup <- c(
-    'Class' = 1,
-    'Mechanism' = 2,
-    'Group' = 3,
-    'Gene' = 4
+    'Type' = 1,
+    'Class' = 2,
+    'Mechanism' = 3,
+    'Group' = 4,
+    'Gene' = 5
 )
 
 generate_exploratory_preview <- function(data,
