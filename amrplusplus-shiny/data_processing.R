@@ -406,6 +406,7 @@ aggregate_and_filter <- function(dt_list,
             rownames(pData(AMR_analytic_data[[l]])) <- metadata[sample_idx, .SD, .SDcols=sample_column_id][[sample_column_id]]
             fData(AMR_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(AMR_analytic_data[[l]])))
             rownames(fData(AMR_analytic_data[[l]])) <- rownames(MRcounts(AMR_analytic_data[[l]]))
+            pData(AMR_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(kraken, p=0.5)
         }
         
         for( l in 1:length(AMR_raw_analytic_data) ) {
@@ -574,6 +575,7 @@ aggregate_and_filter <- function(dt_list,
             rownames(pData(kraken_analytic_data[[l]])) <- metadata[[sample_column_id]][sample_idx]
             fData(kraken_analytic_data[[l]]) <- data.frame(Feature=rownames(MRcounts(kraken_analytic_data[[l]])))
             rownames(fData(kraken_analytic_data[[l]])) <- rownames(MRcounts(kraken_analytic_data[[l]]))
+            pData(kraken_analytic_data[[l]]@expSummary$expSummary)$normFactors <- calcNormFactors(amr, p=0.5)
         }
         
         for( l in 1:length(kraken_raw_analytic_data) ) {

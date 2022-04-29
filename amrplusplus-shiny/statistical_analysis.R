@@ -267,13 +267,13 @@ exploratory_zero_inflated_gaussian_regression <- function(analytic_MRexp,
                                         metadata_feature)
     
     local_contrasts <- as.list(contrast_list)
-    local_contrasts[[length(local_contrasts)+1]] <- res$fit$design
+    local_contrasts[[length(local_contrasts)+1]] <- res@fit$design
     names(local_contrasts)[length(local_contrasts)] <- 'levels'
     
     contrast_matrix <- do.call(makeContrasts, local_contrasts)
     colnames(contrast_matrix) <- make.names(contrast_list)
     
-    contrast_fit <- contrasts.fit(res$fit, contrast_matrix)        
+    contrast_fit <- contrasts.fit(res@fit, contrast_matrix)        
     contrast_fit <- eBayes(contrast_fit)
     
     stats_results <- data.table(
