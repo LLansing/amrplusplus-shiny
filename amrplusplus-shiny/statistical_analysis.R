@@ -244,8 +244,8 @@ exploratory_zero_inflated_gaussian_regression <- function(analytic_MRexp,
             }
         },
         error=function(e) {
-            print(paste('Model failed to converge for ', data_type, ' ', annotation_level,
-                        sep='', collapse=''))
+            writeLines(paste('fitZig failed for ', data_type, ' ', annotation_level,
+                        '\n\tError: ', e, sep='', collapse=''))
         }
     )
     
